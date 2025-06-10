@@ -24,7 +24,7 @@ def create_pdf(idea_text, filename="Generated_Ideas.pdf"):
 # -------------------- Streamlit Frontend --------------------
 st.set_page_config(page_title="Idea Generator for Teachers", layout="centered")
 
-st.title("🎯 CLT1-Idea Generator for Teaching-Learning Challenges")
+st.title("🎯 CLT-Idea Generator for Teaching-Learning Challenges")
 st.write("Use this tool to generate creative solutions to your teaching-learning problems using Gemini AI.")
 
 # User Input
