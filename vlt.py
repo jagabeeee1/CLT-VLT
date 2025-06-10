@@ -3,7 +3,7 @@ import google.generativeai as genai
 from fpdf import FPDF
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyCWEgu4uLkd6UNb-1C1G1BZksPc8vOpQb8")
+genai.configure(api_key="xxxx")
 model = genai.GenerativeModel('gemini-2.0-flash')
 
 # -------------------- Function to Generate Ideas --------------------
