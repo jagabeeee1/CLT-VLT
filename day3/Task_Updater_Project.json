@@ -1,0 +1,151 @@
+{
+  "name": "Task Updater Project",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1uHb73ZLTqxbKtmaRCn0oe-3EMefaV1SJvAqg9g627Eg",
+          "mode": "list",
+          "cachedResultName": "Daily Stand-Up Automation & Task Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uHb73ZLTqxbKtmaRCn0oe-3EMefaV1SJvAqg9g627Eg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uHb73ZLTqxbKtmaRCn0oe-3EMefaV1SJvAqg9g627Eg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        -300,
+        -20
+      ],
+      "id": "a173c55e-1abd-4f8f-9c5e-1971d9c4fe38",
+      "name": "Google Sheets Trigger",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "6DDqSpHuXTUeQ9gj",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Based on the inputs from the Google sheet trigger, Generate an email with a subject name: New Task Alert \nBody of the email should be like\n1.Dear Sir/Madam\n2.Greetings from CLT. New Task has been added \n3.Task Name:{{ $json['Task Name'] }}\n4.Task Description:{{ $json['Task Description'] }}\n5.Task Deadline: {{ $json['Deadline '] }}\n6.Task Priority:{{ $json.Priority }}\nYou are requested to submit the task on the due date  \n\nImportant Note for Google gemini dont add othe rwords execept email contnet mentioned before ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        -80,
+        -20
+      ],
+      "id": "b8a9a208-fc3e-431c-afd7-071bd0f7e826",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        -60,
+        200
+      ],
+      "id": "e8a63d70-6d34-4317-991d-e6b04b373523",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mFygDLdQgE6ZTQfJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "jagadeesh.b.dt@snsgroups.com",
+        "subject": "New Task Alert",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        280,
+        -20
+      ],
+      "id": "f3c5edf1-af69-409a-a18d-77a76eb8a950",
+      "name": "Gmail",
+      "webhookId": "a557e896-90ae-4910-8336-6988a6128fbb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WC7Y94mfQU2tJgmU",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets Trigger": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "f83ef38d-e3d6-44b9-ad36-a4414251ed7e",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a45f9eeebea6f2dcc804455a0d1fd3eaaf8eb0c3ebb9d13136acab0a0e4b4f20"
+  },
+  "id": "GiViUbnjDIwJaswJ",
+  "tags": []
+}

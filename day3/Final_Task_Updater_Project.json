@@ -1,0 +1,268 @@
+{
+  "name": "Final Task Updater Project",
+  "nodes": [
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1Y8qASXcXP6AIsIGr_JkK56JnEakQMzLpnMrJN66ymNM",
+          "mode": "list",
+          "cachedResultName": "Team email id",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Y8qASXcXP6AIsIGr_JkK56JnEakQMzLpnMrJN66ymNM/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1Y8qASXcXP6AIsIGr_JkK56JnEakQMzLpnMrJN66ymNM/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        2400,
+        260
+      ],
+      "id": "d49a0e89-066e-4ef8-8071-c35044cff617",
+      "name": "Google Sheets",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fPA6KtGtq4BRURcU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "rules": {
+          "values": [
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "leftValue": "={{ $('Google Sheets Trigger1').item.json['Team Alert'] }}",
+                    "rightValue": "={{ $json['Team Name'] }}",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals"
+                    },
+                    "id": "19ff2904-29fe-43ca-8fac-187bba6e360f"
+                  }
+                ],
+                "combinator": "and"
+              }
+            },
+            {
+              "conditions": {
+                "options": {
+                  "caseSensitive": true,
+                  "leftValue": "",
+                  "typeValidation": "strict",
+                  "version": 2
+                },
+                "conditions": [
+                  {
+                    "id": "ef6b2ed1-2385-4768-b105-c4a5f92a9572",
+                    "leftValue": "",
+                    "rightValue": "",
+                    "operator": {
+                      "type": "string",
+                      "operation": "equals",
+                      "name": "filter.operator.equals"
+                    }
+                  }
+                ],
+                "combinator": "and"
+              }
+            }
+          ]
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.switch",
+      "typeVersion": 3.2,
+      "position": [
+        2600,
+        140
+      ],
+      "id": "507099e5-e577-4236-91ac-0bb604ae6b47",
+      "name": "Switch"
+    },
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "mode": "everyMinute"
+            }
+          ]
+        },
+        "documentId": {
+          "__rl": true,
+          "value": "1uHb73ZLTqxbKtmaRCn0oe-3EMefaV1SJvAqg9g627Eg",
+          "mode": "list",
+          "cachedResultName": "Daily Stand-Up Automation & Task Tracker",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uHb73ZLTqxbKtmaRCn0oe-3EMefaV1SJvAqg9g627Eg/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1uHb73ZLTqxbKtmaRCn0oe-3EMefaV1SJvAqg9g627Eg/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheetsTrigger",
+      "typeVersion": 1,
+      "position": [
+        1900,
+        60
+      ],
+      "id": "ab1346df-9682-44f1-b558-35a9dfaa4954",
+      "name": "Google Sheets Trigger1",
+      "credentials": {
+        "googleSheetsTriggerOAuth2Api": {
+          "id": "6DDqSpHuXTUeQ9gj",
+          "name": "Google Sheets Trigger account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=Based on the inputs from the Google sheet trigger, Generate an email with a subject name: New Task Alert \nBody of the email should be like\n1.Dear Sir/Madam\n2.Greetings from CLT. New Task has been added \n3.Task Name:{{ $json['Task Name'] }}\n4.Task Description:{{ $json['Task Description'] }}\n5.Task Deadline: {{ $json['Deadline '] }}\n6.Task Priority:{{ $json.Priority }}\nYou are requested to submit the task on the due date  \n\nImportant Note for Google gemini dont add othe rwords execept email contnet mentioned before ",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        2120,
+        80
+      ],
+      "id": "abfdae76-8188-4273-811b-8a69d857ac22",
+      "name": "AI Agent1"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        2040,
+        500
+      ],
+      "id": "064ea41e-bc0a-41c0-b93f-d6197061848d",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mFygDLdQgE6ZTQfJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $json['Email Id '] }}",
+        "subject": "New Task Alert",
+        "emailType": "text",
+        "message": "={{ $('AI Agent1').item.json.output }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        2820,
+        120
+      ],
+      "id": "ed69b7b9-bdda-46e5-aa09-a15db7ea073c",
+      "name": "Gmail1",
+      "webhookId": "a557e896-90ae-4910-8336-6988a6128fbb",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WC7Y94mfQU2tJgmU",
+          "name": "Gmail account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Sheets": {
+      "main": [
+        [
+          {
+            "node": "Switch",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Switch": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Sheets Trigger1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent1": {
+      "main": [
+        [
+          {
+            "node": "Google Sheets",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent1",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "a3e44d45-4e4e-4f81-aafb-62454d25b5e4",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a45f9eeebea6f2dcc804455a0d1fd3eaaf8eb0c3ebb9d13136acab0a0e4b4f20"
+  },
+  "id": "GiViUbnjDIwJaswJ",
+  "tags": []
+}
