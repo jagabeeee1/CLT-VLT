@@ -1,3 +1,7 @@
 streamlit
 google-generativeai
 fpdf
+langchain
+langchain-core
+langchain-google-genai
+gTTS
