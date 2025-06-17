@@ -1,0 +1,644 @@
+{
+  "name": "Whatsapp Integration",
+  "nodes": [
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        480,
+        220
+      ],
+      "id": "0476b5e6-0e49-46af-a44d-f3752f067f98",
+      "name": "Google Gemini Chat Model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mFygDLdQgE6ZTQfJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const weeklySubmissions = $(\"Intern Weekly Summary Update\")\n  .all()\n  .map((item) => item.json);\nconst masterList = $input.all().map((item) => item.json);\n\nconst missingTeams = masterList.filter((masterItem) => {\n  const matchingSubmission = weeklySubmissions.find(\n    (submission) =>\n      submission[\"Team Name\"] === masterItem[\"Standard Team Name\"],\n  );\n  return !matchingSubmission;\n});\n\nconst result = missingTeams.map((item) => ({\n  \"Intern Team Name\": item[\"Standard Team Name\"],\n  \"Intern Name\": item[\"Intern Name\"],\n  \"Email ID\": item[\"Email id \"],\n}));\n\nreturn result;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        0
+      ],
+      "id": "45772d39-f54b-4bf5-93ef-3e291ed6a542",
+      "name": "Code"
+    },
+    {
+      "parameters": {
+        "jsCode": "const weeklySubmissions = $(\"Intern Weekly Summary Update\")\n  .all()\n  .map((item) => item.json);\nconst masterInternList = $input.all().map((item) => item.json);\n\nconst submittedTeams = weeklySubmissions\n  .map((submission) => {\n    const internData = masterInternList.find(\n      (intern) =>\n        intern[\"Intern Name\"] === submission[\"Intern Name\"] &&\n        intern[\"Standard Team Name\"] === submission[\"Team Name\"],\n    );\n    if (internData) {\n      return {\n        \"Intern Team Name\": submission[\"Team Name\"],\n        \"Intern Name\": submission[\"Intern Name\"],\n        \"Email ID\": internData[\"Email id \"],\n        \"Weekly Updates\": submission[\"Weekly Updates\"],\n      };\n    }\n  })\n  .filter(Boolean); // filter out undefined values\n\nreturn submittedTeams;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        360,
+        360
+      ],
+      "id": "2724dfa0-11b3-44cb-ad7a-5fa8acc889e5",
+      "name": "Code1"
+    },
+    {
+      "parameters": {
+        "httpMethod": "POST",
+        "path": "4c36ec8a-1ca1-4492-adb0-a26a3c5ed487",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.webhook",
+      "typeVersion": 2,
+      "position": [
+        -260,
+        0
+      ],
+      "id": "40b6d3a2-8538-42ad-b20f-630aebef976f",
+      "name": "Webhook",
+      "webhookId": "4c36ec8a-1ca1-4492-adb0-a26a3c5ed487"
+    },
+    {
+      "parameters": {
+        "operation": "append",
+        "documentId": {
+          "__rl": true,
+          "value": "1o46HItkMrx_mrSIopPHFOPbv78WQxl1EvaZm6dEqQqQ",
+          "mode": "list",
+          "cachedResultName": "Intern Work Status Project",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o46HItkMrx_mrSIopPHFOPbv78WQxl1EvaZm6dEqQqQ/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1o46HItkMrx_mrSIopPHFOPbv78WQxl1EvaZm6dEqQqQ/edit#gid=0"
+        },
+        "columns": {
+          "mappingMode": "defineBelow",
+          "value": {
+            "Intern Name": "={{ $json.body['Intern Name'] }}",
+            "Team Name": "={{ $json.body['Team Name'] }}",
+            "Weekly Updates": "={{ $json.body['Weekly Task Summary'] }}"
+          },
+          "matchingColumns": [],
+          "schema": [
+            {
+              "id": "Sl.No",
+              "displayName": "Sl.No",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Intern Name",
+              "displayName": "Intern Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Team Name",
+              "displayName": "Team Name",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            },
+            {
+              "id": "Weekly Updates",
+              "displayName": "Weekly Updates",
+              "required": false,
+              "defaultMatch": false,
+              "display": true,
+              "type": "string",
+              "canBeUsedToMatch": true
+            }
+          ],
+          "attemptToConvertTypes": false,
+          "convertFieldsToString": false
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        -80,
+        0
+      ],
+      "id": "b7768d4f-85d2-4444-9d27-a4e0c61e6ece",
+      "name": "Intern Weekly Summary Update",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fPA6KtGtq4BRURcU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "documentId": {
+          "__rl": true,
+          "value": "1E9BZyDgNTLBRLZIclWTQIpUsQft_nmrpVSzGRt9-K9o",
+          "mode": "list",
+          "cachedResultName": "Intern Team Details",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1E9BZyDgNTLBRLZIclWTQIpUsQft_nmrpVSzGRt9-K9o/edit?usp=drivesdk"
+        },
+        "sheetName": {
+          "__rl": true,
+          "value": "gid=0",
+          "mode": "list",
+          "cachedResultName": "Sheet1",
+          "cachedResultUrl": "https://docs.google.com/spreadsheets/d/1E9BZyDgNTLBRLZIclWTQIpUsQft_nmrpVSzGRt9-K9o/edit#gid=0"
+        },
+        "options": {}
+      },
+      "type": "n8n-nodes-base.googleSheets",
+      "typeVersion": 4.6,
+      "position": [
+        120,
+        0
+      ],
+      "id": "34dc0daf-a1f2-4ac7-9fe5-44b4a47702f7",
+      "name": "Intern Team Details",
+      "credentials": {
+        "googleSheetsOAuth2Api": {
+          "id": "fPA6KtGtq4BRURcU",
+          "name": "Google Sheets account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=I am Lochana, Buisness Process Associate of SNS Institutions.Create a professional reminder email for the not submission of  weekly task report by Intern of SNS Institutions.\nSubject: Reminder: Weekly Task Report Due - SNS Institutions Intern {{ $json['Intern Name'] }}\nBody of the email should include \nDear{{ $json['Intern Team Name'] }}  Team   ,\nA gentle reminder to send the weekly task summary report. Your due date is over as of now but send asap for the records. \n\nThanks \nLochana \nBuisness Process Associate \nSNS Institutions\n\n\nRemove unwanted message from google gemini and clean email content. Remove unwanted stars in the mail conent. Do not Bold any word in the mail content.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        520,
+        0
+      ],
+      "id": "a66b9173-cdcc-4376-9107-d5b0c2bad2f5",
+      "name": "AI Agent for Sending Reminder"
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=I am Lochana, Buisness Process Associate of SNS Institutions. Create a professional submission email for acknowldging the submission of  weekly task report by Intern of SNS Institutions. Body of the email should include \nSubject: Gentle Reminder: {{ $json['Intern Name'] }}Weekly Task Report Submission - [Intern Name] - SNS Institutions\n\nDear{{ $json['Intern Team Name'] }}  Team   ,\nThank you for the submission of your weekly task summary. \nThe summary is listed below for your reference\n{{ $json['Weekly Updates'] }}\n\nThanks \nLochana \nBuisness Process Associate \nSNS Institutions\n\nRemove unwanted message from google gemini and clean email. . Remove unwanted stars in the mail conent. Do not Bold any word in the mail content.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        520,
+        360
+      ],
+      "id": "18017855-10f6-4cb4-b127-32649a2e80f5",
+      "name": "AI Agent for Task Summary"
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Code').item.json['Email ID'] }}",
+        "subject": "Weekly Task Remainder",
+        "emailType": "text",
+        "message": "={{ $('AI Agent for Sending Reminder').item.json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        840,
+        0
+      ],
+      "id": "0c9b3c3d-b94c-44e9-bb3f-c859c166b81c",
+      "name": "Gmail for Remainder",
+      "webhookId": "a4a2da24-9d6d-4a3d-bd56-b6e536a8fd7f",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WC7Y94mfQU2tJgmU",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "sendTo": "={{ $('Code1').item.json['Email ID'] }}",
+        "subject": "Weekly Task Update Summary",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        840,
+        360
+      ],
+      "id": "3e89cc97-62fa-4400-996f-2ec72b6e8bfc",
+      "name": "Gmail for Task Summary",
+      "webhookId": "a5c9e74f-95c9-40a0-8886-e03cd20e756e",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WC7Y94mfQU2tJgmU",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "promptType": "define",
+        "text": "=I am Lochana, Buisness Process Associate of SNS Institutions, I have to send professional email to my DT coordinator Ms.Geetha, regarding the summary of Interns weekly report. Body of the email should be like \n\nIntern Name :{{ $json['1.Intern Name'] }}\nIntern Team Name:{{ $json['2.Team Name'] }}\nIntern Weekly Task Summary: {{ $json['3.Weekly Task Summary'] }}\n\n Remove unwanted stars in the mail conent.Do not Bold any word in the mail content. \nRemove unwanted message and give a professional and clean email content.",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.agent",
+      "typeVersion": 2,
+      "position": [
+        0,
+        580
+      ],
+      "id": "b2e9a4f6-321a-4f08-a661-5ec1d13c3fb4",
+      "name": "AI Agent"
+    },
+    {
+      "parameters": {
+        "modelName": "models/gemini-2.0-flash",
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.lmChatGoogleGemini",
+      "typeVersion": 1,
+      "position": [
+        0,
+        760
+      ],
+      "id": "3dbd4720-4c4b-477c-ba86-e42c2eb285fa",
+      "name": "Google Gemini Chat Model1",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "mFygDLdQgE6ZTQfJ",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const items = $input.all();\nconst summary = items.map((item) => {\n  return {\n    \"1.Intern Name\": item?.json[\"Intern Name\"],\n    \"2.Team Name\": item?.json[\"Team Name\"],\n    \"3.Weekly Task Summary\": item?.json[\"Weekly Updates\"],\n  };\n});\nreturn summary;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        -260,
+        580
+      ],
+      "id": "dfdfc0c7-5844-423e-b94a-17ea5c8c1f92",
+      "name": "Code2"
+    },
+    {
+      "parameters": {
+        "sendTo": "clt.dt@snsgroups.com",
+        "subject": "Interns Weekly Task Summary ",
+        "emailType": "text",
+        "message": "={{ $json.output }}",
+        "options": {
+          "appendAttribution": false
+        }
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        840,
+        580
+      ],
+      "id": "3d57f46b-3766-4165-886e-f670bf365797",
+      "name": "Gmail",
+      "webhookId": "7c8e623d-48b7-42d7-81e1-1a8515e306c6",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WC7Y94mfQU2tJgmU",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "operation": "get",
+        "messageId": "={{ $json.id }}"
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        1000,
+        0
+      ],
+      "id": "b09f5683-1d79-4f3d-bd62-e62c132409d6",
+      "name": "Gmail1",
+      "webhookId": "ad25a667-0441-4c1c-89f9-d00894828665",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "WC7Y94mfQU2tJgmU",
+          "name": "Gmail account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "jsCode": "const emails = $input.all().map((item) => item.json);\nconst subject = emails[0]?.Subject;\nconst body = emails[0]?.snippet;\n\nconst result = {\n  subject,\n  body,\n};\n\nemails.length = 0;\n\nreturn result;\n"
+      },
+      "type": "n8n-nodes-base.code",
+      "typeVersion": 2,
+      "position": [
+        1160,
+        0
+      ],
+      "id": "ef8cd313-bba2-4e22-9548-ea9e63d0e497",
+      "name": "Code3"
+    },
+    {
+      "parameters": {
+        "from": "+15737734137",
+        "to": "+918807084413",
+        "message": "={{ $json.body }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.twilio",
+      "typeVersion": 1,
+      "position": [
+        1320,
+        0
+      ],
+      "id": "82f223a4-bbb3-4053-a8de-444d8130046f",
+      "name": "Twilio",
+      "credentials": {
+        "twilioApi": {
+          "id": "CHtz5F1znM7CdAnP",
+          "name": "Twilio account 2"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1387672622",
+        "text": "={{ $('AI Agent for Task Summary').item.json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1040,
+        360
+      ],
+      "id": "8de57a56-4aab-4602-8dca-7b1127d855ff",
+      "name": "Telegram",
+      "webhookId": "ce4cba1d-a862-4040-8ba4-0c63026f8a02",
+      "credentials": {
+        "telegramApi": {
+          "id": "qz4Hpo4Kc4LQ4hP3",
+          "name": "Telegram account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "chatId": "1387672622",
+        "text": "={{ $('AI Agent').item.json.output }}",
+        "additionalFields": {}
+      },
+      "type": "n8n-nodes-base.telegram",
+      "typeVersion": 1.2,
+      "position": [
+        1060,
+        580
+      ],
+      "id": "04aff724-8a28-4057-ab3e-92f8ae8c29ee",
+      "name": "Telegram1",
+      "webhookId": "ce4cba1d-a862-4040-8ba4-0c63026f8a02",
+      "credentials": {
+        "telegramApi": {
+          "id": "qz4Hpo4Kc4LQ4hP3",
+          "name": "Telegram account"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "Google Gemini Chat Model": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent for Sending Reminder",
+            "type": "ai_languageModel",
+            "index": 0
+          },
+          {
+            "node": "AI Agent for Task Summary",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code": {
+      "main": [
+        [
+          {
+            "node": "AI Agent for Sending Reminder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code1": {
+      "main": [
+        [
+          {
+            "node": "AI Agent for Task Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Webhook": {
+      "main": [
+        [
+          {
+            "node": "Intern Weekly Summary Update",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intern Weekly Summary Update": {
+      "main": [
+        [
+          {
+            "node": "Intern Team Details",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code2",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Intern Team Details": {
+      "main": [
+        [
+          {
+            "node": "Code",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Code1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent for Sending Reminder": {
+      "main": [
+        [
+          {
+            "node": "Gmail for Remainder",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent for Task Summary": {
+      "main": [
+        [
+          {
+            "node": "Gmail for Task Summary",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "AI Agent": {
+      "main": [
+        [
+          {
+            "node": "Gmail",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Google Gemini Chat Model1": {
+      "ai_languageModel": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "ai_languageModel",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code2": {
+      "main": [
+        [
+          {
+            "node": "AI Agent",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail for Remainder": {
+      "main": [
+        [
+          {
+            "node": "Gmail1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail1": {
+      "main": [
+        [
+          {
+            "node": "Code3",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Code3": {
+      "main": [
+        [
+          {
+            "node": "Twilio",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail for Task Summary": {
+      "main": [
+        [
+          {
+            "node": "Telegram",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Gmail": {
+      "main": [
+        [
+          {
+            "node": "Telegram1",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "bcef939f-feae-41d9-b43b-1ed78a088ea9",
+  "meta": {
+    "templateCredsSetupCompleted": true,
+    "instanceId": "a45f9eeebea6f2dcc804455a0d1fd3eaaf8eb0c3ebb9d13136acab0a0e4b4f20"
+  },
+  "id": "d8xiH78pllz3bjrH",
+  "tags": []
+}
