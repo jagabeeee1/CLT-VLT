@@ -3,7 +3,7 @@ from fpdf import FPDF
 import google.generativeai as genai
 
 # Configure Gemini API
-genai.configure(api_key="AIzaSyCWEgu4uLkd6UNb-1C1G1BZksPc8vOpQb8")
+genai.configure(api_key="AIzaSyCWEgu4uLkd6UNb-1C1G1BZksPc8vOpQb8")  # Replace with your API Key
 
 # Streamlit Page Configuration
 st.set_page_config(page_title="AI Faculty Mentor", page_icon="🎓", layout="centered")
@@ -16,7 +16,7 @@ st.markdown("""
 
 # App Description
 st.write("""
-Welcome to **AI Faculty Mentor**, an idea generation platform designed for teachers to explore solutions for the challenges faced in Academic and Administrative Processes. 
+Welcome to **AI Faculty Mentor**, an idea generation platform designed for college teachers to explore solutions for the challenges faced in Academic and Administrative Processes. 
 Please select your challenge area, describe your need, and choose the tone for the idea you would like to receive.
 """)
 
@@ -65,13 +65,16 @@ if st.button("Generate Ideas"):
         Tone: {tone}
         
         Provide clear and actionable suggestions."""
-        
+
         model = genai.GenerativeModel('gemini-2.0-flash')
         response = model.generate_content(prompt)
         generated_ideas = response.text
-        
+
         st.subheader("Generated Ideas")
         st.write(generated_ideas)
+
+        # Unicode Fix: Remove unsupported characters
+        generated_ideas = ''.join(c for c in generated_ideas if ord(c) < 256)
 
         # Generate PDF
         pdf = FPDF()
