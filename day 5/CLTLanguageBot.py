@@ -7,7 +7,7 @@ from gtts import gTTS
 import base64
 
 # --- Set your Gemini API Key ---
-os.environ['GOOGLE_API_KEY'] = 'AIzaSyCWEgu4uLkd6UNb-1C1G1BZksPc8vOpQb8'  # Replace with your Gemini API key
+os.environ['GOOGLE_API_KEY'] = 'AIzaSyCYZge2Zh2fF2Ay_eGB8QCCpz6QB6QGQAQ'  # Replace with your Gemini API key
 
 # --- Streamlit Page Setup ---
 st.set_page_config(page_title="CLT's Language Learning - SNS Institutions", page_icon="🌐")
@@ -67,3 +67,4 @@ if english_text.strip():
             translate_and_speak("Hindi", "hi")
 else:
     st.info("Please enter a sentence to enable translation.")
+
